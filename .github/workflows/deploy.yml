@@ -1,4 +1,4 @@
-name: Deploy content to static webapp
+name: 'Deploy content to static webapp'
 on:
   workflow_dispatch:
 

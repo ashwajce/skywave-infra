@@ -15,6 +15,6 @@ terraform {
     resource_group_name  = "skywaveconsultant-prod"
     storage_account_name = "skywaveconsultantstor"
     container_name       = "skywaveconsultantconatiner"
-    key          = "prod.tfstate"
+    key                  = "prod.tfstate"
   }
 }

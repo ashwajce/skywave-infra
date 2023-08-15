@@ -2,7 +2,7 @@ on:
   push:
     branches: [ main ]
 
-name: storageaccount
+name: storageaccount1
 
 jobs:
 

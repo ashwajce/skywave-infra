@@ -1,64 +1,32 @@
-name: 'Terraform_Storage'
- 
 on:
   push:
-    branches:
-    - main
-  pull_request:
- 
+    branches: [ main ]
+
+name: storageaccount
+
 jobs:
-  terraform:
-    name: 'Terraform'
-    env:
-      ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}  
-      ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}  
-      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}  
-      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
-      
+
+  Backend_storage:
     runs-on: ubuntu-latest
-    environment: production
- 
-    defaults:
-      run:
-        shell: bash
- 
+    
     steps:
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v2
- 
-    - name: 'Terraform Format'
-      uses: hashicorp/terraform-github-actions@master
+    - name: Azure login
+      id: login
+      uses: azure/login@v1.4.3
       with:
-        tf_actions_version: 0.14.8
-        tf_actions_subcommand: 'fmt'
-        tf_actions_working_dir: "./storage"
-         
-    - name: 'Terraform Init'
-      uses: hashicorp/terraform-github-actions@master
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+    - name: Prepare artifact
+      shell: bash
+      run: |
+        az group create --name skywave-prod --location eastus2
+        az storage account create --resource-group skywave-prod --name skywaveprodtfstate --location eastus2 --sku Standard_LRS --kind StorageV2
+        az storage container create -n skywavestate --public-access blob --account-name skywaveprodtfstate
+        
+    - name: Azure CLI script
+      uses: azure/CLI@v1
       with:
-        tf_actions_version: 0.14.8
-        tf_actions_subcommand: 'init'
-        tf_actions_working_dir: "./storage"
- 
-    - name: 'Terraform Validate'
-      uses: hashicorp/terraform-github-actions@master
-      with:
-        tf_actions_version: 0.14.8
-        tf_actions_subcommand: 'validate'
-        tf_actions_working_dir: "./storage"
-         
-    - name: 'Terraform Plan'
-      uses: hashicorp/terraform-github-actions@master
-      with:
-        tf_actions_version: 0.14.8
-        tf_actions_subcommand: 'plan'
-        tf_actions_working_dir: "./storage"
- 
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/main'
-      uses: hashicorp/terraform-github-actions@master
-      with:
-        tf_actions_version: 0.14.8
-        tf_actions_subcommand: 'apply'
-        tf_actions_working_dir: "./storage"
+        inlineScript: |
+          az logout
+          az cache purge
+          az account clear

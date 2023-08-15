@@ -12,9 +12,9 @@ provider "azurerm" {
 
 terraform {
   backend "azurerm" {
-    resource_group_name  = "skywaveconsultant-prod"
-    storage_account_name = "skywaveconsultantstor"
-    container_name       = "skywaveconsultantconatiner"
+    resource_group_name  = "skywave-prod"
+    storage_account_name = "skywaveprodtfstate"
+    container_name       = "skywavestate"
     key                  = "prod.tfstate"
   }
 }

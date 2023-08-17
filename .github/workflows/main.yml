@@ -19,8 +19,8 @@ jobs:
     - name: Prepare artifact
       shell: bash
       run: |
-        az group create --name skywave-prod --location southindia
-        az storage account create --resource-group skywave-prod --name skywaveprodtfstate01 --location southindia --sku Standard_LRS --kind StorageV2
+        az group create --name skywave-prod --location eastasia
+        az storage account create --resource-group skywave-prod --name skywaveprodtfstate01 --location eastasia --sku Standard_LRS --kind StorageV2
         az storage container create -n skywavestate --public-access blob --account-name skywaveprodtfstate01
         
     - name: Azure CLI script
